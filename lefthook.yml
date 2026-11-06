@@ -7,5 +7,8 @@ pre-commit:
         - name: lint
           glob: "*.{js,jsx,ts,tsx}"
           run: npx oxlint {staged_files}
+        - name: lint-design
+          glob: "DESIGN.md"
+          run: npm run lint:design
         - name: typecheck
           run: npm run typecheck

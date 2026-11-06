@@ -13,6 +13,7 @@ Single full-stack TypeScript app in one package (no separate frontend and backen
     - `build` and `start`: build and run the production build
     - `typecheck`: run `tsc`
     - `lint`: run oxlint
+    - `lint:design`: lint `DESIGN.md` with `@google/design.md`
     - `format`: run oxfmt
     - `test`: run Vitest
     - `test:e2e`: run Playwright
@@ -23,8 +24,9 @@ Single full-stack TypeScript app in one package (no separate frontend and backen
 - **E2E tests:** Playwright, set up from the start. Tests live in `e2e/`. Run `npx playwright install chromium` once to download the browser. The dev server is started automatically.
 - **Linting:** oxlint (not ESLint)
 - **Formatting:** oxfmt (not Prettier), with 4-space indentation. `.oxfmtrc.json` skips generated and vendored files (`drizzle/`, lock files, `.mcp.json`, `.agents/`, `.claude/`) and `package.json`, which npm rewrites.
+- **Design system file:** `DESIGN.md` in the repo root, in the [Google design.md](https://github.com/google-labs-code/design.md) format. It is linted with `@google/design.md` (dev dependency, `npm run lint:design`). Errors (broken token references, invalid colors) fail the command; warnings do not. The pre-commit hook runs it only when `DESIGN.md` is staged.
 - **Type checking:** `tsc`
-- **Pre-commit hook:** Lefthook (config in `lefthook.yml`, installed by the `prepare` script on `npm install`). It formats the staged files with oxfmt and re-stages them, lints them with oxlint, and runs `tsc`. Unit and E2E tests are not part of the hook.
+- **Pre-commit hook:** Lefthook (config in `lefthook.yml`, installed by the `prepare` script on `npm install`). It formats the staged files with oxfmt and re-stages them, lints them with oxlint, lints `DESIGN.md` when it is staged, and runs `tsc`. Unit and E2E tests are not part of the hook.
 - **CI:** none for now
 - **Docker Compose (Postgres):**
     - Image `postgres:18`, pinned to the major version (not the `-alpine` variant)
