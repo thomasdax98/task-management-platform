@@ -4,6 +4,8 @@
   "type": "module",
   "scripts": {
     "build": "react-router build",
+    "design:tokens": "design.md export DESIGN.md --format css-tailwind > app/design-tokens.generated.css",
+    "predev": "npm run design:tokens",
     "dev": "react-router dev",
     "start": "react-router-serve ./build/server/index.js",
     "typecheck": "react-router typegen && tsc",

@@ -3,6 +3,7 @@
     "tabWidth": 4,
     "ignorePatterns": [
         "drizzle/",
+        "app/design-tokens.generated.css",
         "package.json",
         "package-lock.json",
         "skills-lock.json",
