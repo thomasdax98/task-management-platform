@@ -1,5 +1,7 @@
 # Task Management Platform
 
+Hello
+
 A task management app similar to Jira. See [docs/mvp.md](docs/mvp.md) for the scope and [docs/tech-stack.md](docs/tech-stack.md) for the stack.
 
 ## Getting started
