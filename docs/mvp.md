@@ -15,7 +15,15 @@ The first milestone is a rough MVP that covers three things:
 
 ## Open decisions
 
-- The exact fields of a task (required fields, limits, ID format) are not defined yet. They will be decided after the basic project setup.
+- Limits on task fields (for example maximum title length) are not defined yet.
+
+## Decided: first schema and board
+
+- Tables: `users` (`id` uuid, `name`, `email` unique, `created_at`) and `tasks` (`id` uuid, `title`, `description` default empty, `status` enum default `todo`, nullable `assignee_id`, `created_at`).
+- The homepage (`/`) is the board: three columns, cards sorted by creation time, drag and drop with `@dnd-kit/core`. A drop posts `intent=move`, `id` and `status` to the route action (validated with Zod), and the UI updates optimistically.
+- The card shows title, a two-line description preview and the assignee (initials avatar and name, or "Unassigned"). The whole card is the drag handle, and it can also be moved with the keyboard (focus it, press Space, use the arrow keys).
+- `DESIGN.md` describes four statuses (with "In review"). The MVP keeps three, so the review column and the tags, priorities and subtasks on its cards are not built.
+- Creating, editing and deleting tasks and the Users page are not built yet. Run `npm run db:seed` to get sample data (it replaces all users and tasks).
 
 ## Out of scope (possible later)
 
