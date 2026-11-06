@@ -4,6 +4,8 @@
   "type": "module",
   "scripts": {
     "build": "react-router build",
+    "design:tokens": "design.md export DESIGN.md --format css-tailwind > app/design-tokens.generated.css",
+    "predev": "npm run design:tokens",
     "dev": "react-router dev",
     "start": "react-router-serve ./build/server/index.js",
     "typecheck": "react-router typegen && tsc",
@@ -11,6 +13,7 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "lint": "oxlint",
+    "lint:design": "design.md lint DESIGN.md",
     "format": "oxfmt",
     "test": "vitest run",
     "test:e2e": "playwright test",
@@ -28,6 +31,7 @@
     "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@google/design.md": "^0.4.0",
     "@playwright/test": "^1.64.1",
     "@react-router/dev": "^8.5.1",
     "@tailwindcss/vite": "^4.2.2",

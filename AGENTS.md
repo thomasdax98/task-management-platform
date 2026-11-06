@@ -7,3 +7,7 @@ Build a task management app similar to Jira, starting with a rough MVP: create t
 ## Documentation
 
 Everything we agree on in conversations (decisions, scope changes, requirements, conventions) must be documented in the `docs/` folder. Write it down as soon as it is agreed. Keep `AGENTS.md` short and link to the files in `docs/` for details.
+
+## UI changes
+
+Always read [DESIGN.md](DESIGN.md) before making any UI change, and build with its tokens (the generated Tailwind theme) instead of hard-coded values. Details are in [docs/tech-stack.md](docs/tech-stack.md).
