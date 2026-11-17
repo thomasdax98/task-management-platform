@@ -118,4 +118,4 @@ Within US1: T008 and T009 first (they should fail), then T010 → T011 → T012 
 ## Phase 6: Convergence
 
 - [x] T022 Extend `e2e/create-task.spec.ts` so the duplicate-submit test double-clicks "Create task" and then asserts that `/tasks` lists exactly one task with that title, because the current test only checks the button is disabled per FR-008 (partial)
-- [ ] T023 Cover the failed-save path in `app/routes/tasks.new.tsx` (500 response with "Could not save the task. Try again." and the entered input kept) with a test, for example by extracting the error-to-response mapping into a pure function in `app/lib/` with a Vitest test, per FR-009 and the Edge Cases "Saving fails" entry (partial)
+- [x] T023 Cover the failed-save path in `app/routes/tasks.new.tsx` (500 response with "Could not save the task. Try again." and the entered input kept) with a test, for example by extracting the error-to-response mapping into a pure function in `app/lib/` with a Vitest test, per FR-009 and the Edge Cases "Saving fails" entry (partial)

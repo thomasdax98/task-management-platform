@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { Form, Link, data, redirect, useNavigation } from "react-router";
 
 import { createTask, listUsers } from "../db/tasks.server";
-import { isForeignKeyViolation } from "../lib/pg-errors";
+import { toCreateTaskFailure } from "../lib/create-task-error";
 import { DESCRIPTION_MAX, TITLE_MAX, parseTaskForm } from "../lib/task-schema";
 import type { Route } from "./+types/tasks.new";
 
@@ -24,21 +24,9 @@ export async function action({ request }: Route.ActionArgs) {
     try {
         await createTask(parsed.data);
     } catch (error) {
-        if (isForeignKeyViolation(error)) {
-            return data(
-                {
-                    errors: {
-                        assigneeId:
-                            "This user no longer exists. Pick another or leave it unassigned.",
-                    },
-                    values: { ...values, assigneeId: "" },
-                    formError: null,
-                },
-                400,
-            );
-        }
         console.error("Failed to create task", error);
-        return data({ errors: {}, values, formError: "Could not save the task. Try again." }, 500);
+        const failure = toCreateTaskFailure(error, values);
+        return data(failure.body, failure.status);
     }
     return redirect("/tasks");
 }
