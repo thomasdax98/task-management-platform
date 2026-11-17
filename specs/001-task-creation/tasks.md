@@ -21,8 +21,8 @@ description: "Task list for Task Creation"
 
 **Purpose**: Documentation that MUST be agreed before building (Constitution Principle II)
 
-- [ ] T001 [P] Update `docs/mvp.md`: replace the "Open decisions" entry with the task fields (title required, trimmed, 1–200 chars; description optional, max 5,000; optional assignee; uuid ID), and add the minimal read-only task list page (`/tasks`) to "In scope" as a stand-in until the board exists
-- [ ] T002 [P] Update `docs/tech-stack.md`: add `db:seed` usage, the `app/db/tasks.server.ts` data-access module and the `app/lib/` folder for shared Zod schemas
+- [x] T001 [P] Update `docs/mvp.md`: replace the "Open decisions" entry with the task fields (title required, trimmed, 1–200 chars; description optional, max 5,000; optional assignee; uuid ID), and add the minimal read-only task list page (`/tasks`) to "In scope" as a stand-in until the board exists
+- [x] T002 [P] Update `docs/tech-stack.md`: add `db:seed` usage, the `app/db/tasks.server.ts` data-access module and the `app/lib/` folder for shared Zod schemas
 
 ---
 
@@ -32,11 +32,11 @@ description: "Task list for Task Creation"
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T003 Define the schema in `app/db/schema.ts`: `taskStatus` pgEnum `task_status` with values `todo`, `in_progress`, `done`; `users` table (`id` uuid pk defaultRandom, `name` varchar(100) not null, `email` varchar(254) not null unique, `created_at` timestamptz not null default now); `tasks` table (`id` uuid pk defaultRandom, `title` varchar(200) not null with CHECK `btrim(title) <> ''`, `description` varchar(5000) nullable, `status` task_status not null default `todo`, `assignee_id` uuid nullable references `users.id` ON DELETE SET NULL, `created_at` timestamptz not null default now)
-- [ ] T004 Generate the migration with `npm run db:generate`, review the SQL in `drizzle/` against the constraints in T003, and apply it with `npm run db:migrate` (never `drizzle-kit push`)
-- [ ] T005 Create `app/db/tasks.server.ts` with `listTasks()` (tasks left-joined with the assignee's name, ordered by `created_at` descending), `listUsers()` (ordered by name) and `createTask({ title, description, assigneeId })` (inserts with status `todo`, returns the new task)
-- [ ] T006 [P] Create `app/db/seed.ts` and add the `db:seed` script to `package.json`: insert a few users and tasks (some unassigned), skipping rows that already exist by email so the script is safe to re-run
-- [ ] T007 [P] Register the routes in `app/routes.ts`: `route("tasks", "routes/tasks.tsx")` and `route("tasks/new", "routes/tasks.new.tsx")`
+- [x] T003 Define the schema in `app/db/schema.ts`: `taskStatus` pgEnum `task_status` with values `todo`, `in_progress`, `done`; `users` table (`id` uuid pk defaultRandom, `name` varchar(100) not null, `email` varchar(254) not null unique, `created_at` timestamptz not null default now); `tasks` table (`id` uuid pk defaultRandom, `title` varchar(200) not null with CHECK `btrim(title) <> ''`, `description` varchar(5000) nullable, `status` task_status not null default `todo`, `assignee_id` uuid nullable references `users.id` ON DELETE SET NULL, `created_at` timestamptz not null default now)
+- [x] T004 Generate the migration with `npm run db:generate`, review the SQL in `drizzle/` against the constraints in T003, and apply it with `npm run db:migrate` (never `drizzle-kit push`)
+- [x] T005 Create `app/db/tasks.server.ts` with `listTasks()` (tasks left-joined with the assignee's name, ordered by `created_at` descending), `listUsers()` (ordered by name) and `createTask({ title, description, assigneeId })` (inserts with status `todo`, returns the new task)
+- [x] T006 [P] Create `app/db/seed.ts` and add the `db:seed` script to `package.json`: insert a few users and tasks (some unassigned), skipping rows that already exist by email so the script is safe to re-run
+- [x] T007 [P] Register the routes in `app/routes.ts`: `route("tasks", "routes/tasks.tsx")` and `route("tasks/new", "routes/tasks.new.tsx")`
 
 **Checkpoint**: Schema is migrated, seed data loads, and routes are registered. User stories can start.
 
@@ -50,15 +50,15 @@ description: "Task list for Task Creation"
 
 ### Tests for User Story 1
 
-- [ ] T008 [P] [US1] Write Vitest tests in `app/lib/task-schema.test.ts` for the task schema: title is trimmed, blank title fails, 200 chars passes and 201 fails, empty description becomes `null`, 5,000 chars passes and 5,001 fails, empty `assigneeId` becomes `null`, non-UUID `assigneeId` fails
-- [ ] T009 [P] [US1] Write the Playwright test in `e2e/create-task.spec.ts`: create a task with title and description and see it in the list as "To Do" and "Unassigned" after a reload; blank title shows "Title is required" and keeps the other input; a 201 character title shows the 200 character limit message
+- [x] T008 [P] [US1] Write Vitest tests in `app/lib/task-schema.test.ts` for the task schema: title is trimmed, blank title fails, 200 chars passes and 201 fails, empty description becomes `null`, 5,000 chars passes and 5,001 fails, empty `assigneeId` becomes `null`, non-UUID `assigneeId` fails
+- [x] T009 [P] [US1] Write the Playwright test in `e2e/create-task.spec.ts`: create a task with title and description and see it in the list as "To Do" and "Unassigned" after a reload; blank title shows "Title is required" and keeps the other input; a 201 character title shows the 200 character limit message
 
 ### Implementation for User Story 1
 
-- [ ] T010 [US1] Create the Zod schema in `app/lib/task-schema.ts`: `title` trimmed string, min 1 ("Title is required"), max 200; `description` string, max 5000, empty string becomes `null`; `assigneeId` empty string becomes `null`, otherwise `z.uuid()`. Export a helper that maps Zod issues to `{ title?, description?, assigneeId? }` field messages
-- [ ] T011 [US1] Create `app/routes/tasks.new.tsx`: the form with `title` (text, maxlength 200), `description` (textarea, maxlength 5000), and the submit button disabled while the navigation is submitting (FR-008). The action parses `FormData` with the T010 schema; on invalid input it returns 400 with `errors` and the submitted values, on success it calls `createTask` and redirects 303 to `/tasks`; unexpected errors are caught and return 500 with the form-level message "Could not save the task. Try again." and the input kept (FR-009). Show each error next to its field, styled with Tailwind
-- [ ] T012 [US1] Create `app/routes/tasks.tsx`: the loader calls `listTasks()`; render each task's title, a status label ("To Do", "In Progress", "Done") and the assignee name or "Unassigned", with a "New task" link to `/tasks/new` and an empty state "No tasks yet" linking to the form
-- [ ] T013 [US1] Run `npm run test`, `npm run test:e2e` and the Playwright steps in `quickstart.md` (steps 1, 3, 4, 5) to confirm User Story 1 works on its own
+- [x] T010 [US1] Create the Zod schema in `app/lib/task-schema.ts`: `title` trimmed string, min 1 ("Title is required"), max 200; `description` string, max 5000, empty string becomes `null`; `assigneeId` empty string becomes `null`, otherwise `z.uuid()`. Export a helper that maps Zod issues to `{ title?, description?, assigneeId? }` field messages
+- [x] T011 [US1] Create `app/routes/tasks.new.tsx`: the form with `title` (text, maxlength 200), `description` (textarea, maxlength 5000), and the submit button disabled while the navigation is submitting (FR-008). The action parses `FormData` with the T010 schema; on invalid input it returns 400 with `errors` and the submitted values, on success it calls `createTask` and redirects 303 to `/tasks`; unexpected errors are caught and return 500 with the form-level message "Could not save the task. Try again." and the input kept (FR-009). Show each error next to its field, styled with Tailwind
+- [x] T012 [US1] Create `app/routes/tasks.tsx`: the loader calls `listTasks()`; render each task's title, a status label ("To Do", "In Progress", "Done") and the assignee name or "Unassigned", with a "New task" link to `/tasks/new` and an empty state "No tasks yet" linking to the form
+- [x] T013 [US1] Run `npm run test`, `npm run test:e2e` and the Playwright steps in `quickstart.md` (steps 1, 3, 4, 5) to confirm User Story 1 works on its own
 
 **Checkpoint**: User Story 1 is fully functional and testable. This is the MVP.
 
@@ -72,14 +72,14 @@ description: "Task list for Task Creation"
 
 ### Tests for User Story 2
 
-- [ ] T014 [P] [US2] Extend `e2e/create-task.spec.ts`: create a task choosing a seeded user and see that name in the list; create one leaving "Unassigned" selected and see "Unassigned"
-- [ ] T015 [P] [US2] Extend `app/lib/task-schema.test.ts` with an `assigneeId` case: a valid UUID is accepted and passed through
+- [x] T014 [P] [US2] Extend `e2e/create-task.spec.ts`: create a task choosing a seeded user and see that name in the list; create one leaving "Unassigned" selected and see "Unassigned"
+- [x] T015 [P] [US2] Extend `app/lib/task-schema.test.ts` with an `assigneeId` case: a valid UUID is accepted and passed through
 
 ### Implementation for User Story 2
 
-- [ ] T016 [US2] In `app/routes/tasks.new.tsx`, add a loader that calls `listUsers()` and an `assigneeId` select with an "Unassigned" option (empty value) first and then every user by name; the select still renders with only "Unassigned" when there are no users. Pass `assigneeId` from the action into `createTask`
-- [ ] T017 [US2] In `app/routes/tasks.new.tsx`, handle a deleted assignee: catch the Postgres foreign key violation (code `23503`) from `createTask` and return 400 with `errors.assigneeId` = "This user no longer exists. Pick another or leave it unassigned.", keeping the other input and reloading the user list
-- [ ] T018 [US2] Run `npm run test`, `npm run test:e2e` and the `quickstart.md` steps 2 and 3 to confirm User Story 2
+- [x] T016 [US2] In `app/routes/tasks.new.tsx`, add a loader that calls `listUsers()` and an `assigneeId` select with an "Unassigned" option (empty value) first and then every user by name; the select still renders with only "Unassigned" when there are no users. Pass `assigneeId` from the action into `createTask`
+- [x] T017 [US2] In `app/routes/tasks.new.tsx`, handle a deleted assignee: catch the Postgres foreign key violation (code `23503`) from `createTask` and return 400 with `errors.assigneeId` = "This user no longer exists. Pick another or leave it unassigned.", keeping the other input and reloading the user list
+- [x] T018 [US2] Run `npm run test`, `npm run test:e2e` and the `quickstart.md` steps 2 and 3 to confirm User Story 2
 
 **Checkpoint**: Both user stories work independently.
 
@@ -87,9 +87,9 @@ description: "Task list for Task Creation"
 
 ## Phase 5: Polish & Cross-Cutting Concerns
 
-- [ ] T019 [P] Check keyboard use and labels on the form in `app/routes/tasks.new.tsx`: every field has a visible `<label>`, errors are linked with `aria-describedby`, and focus moves to the first invalid field after a failed submit
-- [ ] T020 Run `npm run typecheck`, `npm run lint` and `npm run format`, fix any findings, and run the full `quickstart.md` from a fresh database (`docker compose down -v`, `npm run db:up`, `npm run db:migrate`, `npm run db:seed`)
-- [ ] T021 Confirm `docs/mvp.md` and `docs/tech-stack.md` still match what was built, and update them if the implementation differed
+- [x] T019 [P] Check keyboard use and labels on the form in `app/routes/tasks.new.tsx`: every field has a visible `<label>`, errors are linked with `aria-describedby`, and focus moves to the first invalid field after a failed submit
+- [x] T020 Run `npm run typecheck`, `npm run lint` and `npm run format`, fix any findings, and run the full `quickstart.md` from a fresh database (`docker compose down -v`, `npm run db:up`, `npm run db:migrate`, `npm run db:seed`)
+- [x] T021 Confirm `docs/mvp.md` and `docs/tech-stack.md` still match what was built, and update them if the implementation differed
 
 ---
 
