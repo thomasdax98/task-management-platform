@@ -63,17 +63,22 @@ test("leaves the task unassigned when no user is chosen", async ({ page }) => {
     await expect(page.getByRole("listitem").filter({ hasText: title })).toContainText("Unassigned");
 });
 
-test("disables the submit button while the form is being submitted", async ({ page }) => {
+test("creates only one task when the submit button is clicked twice", async ({ page }) => {
     await page.route("**/tasks/new*", async (route) => {
         if (route.request().method() === "POST") {
             await new Promise((resolve) => setTimeout(resolve, 500));
         }
         await route.continue();
     });
+    const title = unique("Double click");
     await page.goto("/tasks/new");
-    await page.getByLabel("Title").fill(unique("Double click"));
-    await page.getByRole("button", { name: "Create task" }).click();
+    await page.getByLabel("Title").fill(title);
+    const button = page.getByRole("button", { name: "Create task" });
+    await button.dblclick();
     await expect(page.getByRole("button", { name: "Creating…" })).toBeDisabled();
+
+    await expect(page).toHaveURL(/\/tasks$/);
+    await expect(page.getByRole("listitem").filter({ hasText: title })).toHaveCount(1);
 });
 
 test("shows a message when the chosen assignee was deleted before submitting", async ({ page }) => {
