@@ -39,4 +39,8 @@ Single full-stack TypeScript app in one package (no separate frontend and backen
 - **Postgres driver:** `postgres` (postgres.js), not `pg`
 - **Drizzle layout:** the config is `drizzle.config.ts`, the schema is `app/db/schema.ts`, the client is `app/db/index.server.ts`, and generated migrations go to `drizzle/`. The schema is empty until the task fields are decided.
 - **Schema changes:** versioned migrations. Change the Drizzle schema, run `drizzle-kit generate`, commit the SQL migration file, and apply it with `drizzle-kit migrate`. Do not use `drizzle-kit push`.
+- **Seed script runner:** `db:seed` runs `app/db/seed.ts` with `tsx`, because Node cannot resolve the extensionless imports used in the app.
 - **Seed data:** a seed script fills the local database with a few users and tasks. The `db:seed` script is added together with the schema, because the schema is still empty.
+- **Data access:** database queries live in `app/db/*.server.ts` modules (for example `app/db/tasks.server.ts`), not in route files. Routes stay thin.
+- **Shared schemas:** Zod schemas used by both an action and its form live in `app/lib/`, with their Vitest tests next to them.
+- **E2E database:** the Playwright tests use the local database, so run `npm run db:up`, `npm run db:migrate` and `npm run db:seed` first. Tests create tasks with unique titles and do not clean up.
